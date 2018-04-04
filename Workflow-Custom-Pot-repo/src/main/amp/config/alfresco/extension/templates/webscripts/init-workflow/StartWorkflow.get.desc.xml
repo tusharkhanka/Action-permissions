@@ -1,0 +1,8 @@
+<webscript>
+  <shortname>Start Review and Approve Workflow</shortname>
+  <description>Script to start Review and Approve Workflow on a Node</description>
+  <url>/workflows/approveandreview/start/{path}</url>
+  <format default="xml">argument</format>
+  <authentication>user</authentication>
+  <transaction>required</transaction>
+</webscript>

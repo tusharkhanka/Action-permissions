@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
+  <process id="myProcess" name="My process" isExecutable="true">
+    <startEvent id="alfrescoStartevent1" name="Alfresco start" activiti:formKey="wf:submitReviewTask"></startEvent>
+    <parallelGateway id="parallelgateway1" name="Parallel Gateway"></parallelGateway>
+    <userTask id="alfrescoUsertask1" name="Operations Review" activiti:candidateGroups="GROUP_Operations" activiti:formKey="wf:completedAdhocTask"></userTask>
+    <userTask id="alfrescoUsertask2" name="Marketing Review" activiti:candidateGroups="GROUP_Marketing" activiti:formKey="wf:adhocTask"></userTask>
+    <sequenceFlow id="flow2" sourceRef="parallelgateway1" targetRef="alfrescoUsertask2"></sequenceFlow>
+    <sequenceFlow id="flow3" sourceRef="parallelgateway1" targetRef="alfrescoUsertask1"></sequenceFlow>
+    <parallelGateway id="parallelgateway2" name="Parallel Gateway"></parallelGateway>
+    <sequenceFlow id="flow4" sourceRef="alfrescoUsertask1" targetRef="parallelgateway2"></sequenceFlow>
+    <sequenceFlow id="flow5" sourceRef="alfrescoUsertask2" targetRef="parallelgateway2"></sequenceFlow>
+    <parallelGateway id="parallelgateway3" name="Parallel Gateway"></parallelGateway>
+    <parallelGateway id="parallelgateway4" name="Parallel Gateway"></parallelGateway>
+    <sequenceFlow id="flow6" sourceRef="parallelgateway2" targetRef="parallelgateway3"></sequenceFlow>
+    <sequenceFlow id="flow7" sourceRef="parallelgateway3" targetRef="parallelgateway4"></sequenceFlow>
+    <userTask id="alfrescoUsertask3" name="Revise" activiti:assignee="${initiator.properties.userName}" activiti:formKey="wf:adhocTask"></userTask>
+    <sequenceFlow id="flow8" sourceRef="parallelgateway3" targetRef="alfrescoUsertask3"></sequenceFlow>
+    <userTask id="alfrescoUsertask4" name="Third-Party Review" activiti:assignee="${initiator.properties.userName}" activiti:formKey="wf:adhocTask"></userTask>
+    <sequenceFlow id="flow9" sourceRef="parallelgateway4" targetRef="alfrescoUsertask4"></sequenceFlow>
+    <sequenceFlow id="flow10" sourceRef="alfrescoUsertask4" targetRef="alfrescoUsertask3"></sequenceFlow>
+    <userTask id="alfrescoUsertask5" name="Approved Notification" activiti:assignee="${initiator.properties.userName}" activiti:formKey="wf:adhocTask"></userTask>
+    <sequenceFlow id="flow11" sourceRef="parallelgateway4" targetRef="alfrescoUsertask5"></sequenceFlow>
+    <sequenceFlow id="flow12" sourceRef="alfrescoUsertask4" targetRef="alfrescoUsertask5"></sequenceFlow>
+    <endEvent id="endevent1" name="End"></endEvent>
+    <sequenceFlow id="flow13" sourceRef="alfrescoUsertask5" targetRef="endevent1"></sequenceFlow>
+    <sequenceFlow id="flow14" sourceRef="alfrescoUsertask3" targetRef="endevent1"></sequenceFlow>
+    <serviceTask id="alfrescoScripttask1" name="Submit" activiti:class="org.alfresco.repo.workflow.activiti.script.AlfrescoScriptDelegate"></serviceTask>
+    <sequenceFlow id="flow15" sourceRef="alfrescoStartevent1" targetRef="alfrescoScripttask1"></sequenceFlow>
+    <sequenceFlow id="flow16" sourceRef="alfrescoScripttask1" targetRef="parallelgateway1"></sequenceFlow>
+    <sequenceFlow id="flow17" sourceRef="alfrescoUsertask3" targetRef="alfrescoScripttask1"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_myProcess">
+    <bpmndi:BPMNPlane bpmnElement="myProcess" id="BPMNPlane_myProcess">
+      <bpmndi:BPMNShape bpmnElement="alfrescoStartevent1" id="BPMNShape_alfrescoStartevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="20.0" y="252.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="parallelgateway1" id="BPMNShape_parallelgateway1">
+        <omgdc:Bounds height="40.0" width="40.0" x="220.0" y="247.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="alfrescoUsertask1" id="BPMNShape_alfrescoUsertask1">
+        <omgdc:Bounds height="55.0" width="105.0" x="330.0" y="170.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="alfrescoUsertask2" id="BPMNShape_alfrescoUsertask2">
+        <omgdc:Bounds height="55.0" width="105.0" x="330.0" y="300.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="parallelgateway2" id="BPMNShape_parallelgateway2">
+        <omgdc:Bounds height="40.0" width="40.0" x="510.0" y="247.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="parallelgateway3" id="BPMNShape_parallelgateway3">
+        <omgdc:Bounds height="40.0" width="40.0" x="600.0" y="247.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="parallelgateway4" id="BPMNShape_parallelgateway4">
+        <omgdc:Bounds height="40.0" width="40.0" x="690.0" y="247.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="alfrescoUsertask3" id="BPMNShape_alfrescoUsertask3">
+        <omgdc:Bounds height="55.0" width="105.0" x="330.0" y="400.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="alfrescoUsertask4" id="BPMNShape_alfrescoUsertask4">
+        <omgdc:Bounds height="55.0" width="105.0" x="614.0" y="372.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="alfrescoUsertask5" id="BPMNShape_alfrescoUsertask5">
+        <omgdc:Bounds height="55.0" width="105.0" x="760.0" y="240.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="890.0" y="354.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="alfrescoScripttask1" id="BPMNShape_alfrescoScripttask1">
+        <omgdc:Bounds height="55.0" width="105.0" x="90.0" y="242.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow2" id="BPMNEdge_flow2">
+        <omgdi:waypoint x="240.0" y="287.0"></omgdi:waypoint>
+        <omgdi:waypoint x="240.0" y="327.0"></omgdi:waypoint>
+        <omgdi:waypoint x="330.0" y="327.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow3" id="BPMNEdge_flow3">
+        <omgdi:waypoint x="240.0" y="247.0"></omgdi:waypoint>
+        <omgdi:waypoint x="240.0" y="197.0"></omgdi:waypoint>
+        <omgdi:waypoint x="330.0" y="197.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow4" id="BPMNEdge_flow4">
+        <omgdi:waypoint x="435.0" y="197.0"></omgdi:waypoint>
+        <omgdi:waypoint x="530.0" y="197.0"></omgdi:waypoint>
+        <omgdi:waypoint x="530.0" y="247.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow5" id="BPMNEdge_flow5">
+        <omgdi:waypoint x="435.0" y="327.0"></omgdi:waypoint>
+        <omgdi:waypoint x="530.0" y="327.0"></omgdi:waypoint>
+        <omgdi:waypoint x="530.0" y="287.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow6" id="BPMNEdge_flow6">
+        <omgdi:waypoint x="550.0" y="267.0"></omgdi:waypoint>
+        <omgdi:waypoint x="600.0" y="267.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow7" id="BPMNEdge_flow7">
+        <omgdi:waypoint x="640.0" y="267.0"></omgdi:waypoint>
+        <omgdi:waypoint x="690.0" y="267.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow8" id="BPMNEdge_flow8">
+        <omgdi:waypoint x="620.0" y="287.0"></omgdi:waypoint>
+        <omgdi:waypoint x="600.0" y="384.0"></omgdi:waypoint>
+        <omgdi:waypoint x="382.0" y="400.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow9" id="BPMNEdge_flow9">
+        <omgdi:waypoint x="710.0" y="287.0"></omgdi:waypoint>
+        <omgdi:waypoint x="666.0" y="372.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow10" id="BPMNEdge_flow10">
+        <omgdi:waypoint x="614.0" y="399.0"></omgdi:waypoint>
+        <omgdi:waypoint x="435.0" y="427.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow11" id="BPMNEdge_flow11">
+        <omgdi:waypoint x="730.0" y="267.0"></omgdi:waypoint>
+        <omgdi:waypoint x="760.0" y="267.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow12" id="BPMNEdge_flow12">
+        <omgdi:waypoint x="666.0" y="372.0"></omgdi:waypoint>
+        <omgdi:waypoint x="812.0" y="295.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow13" id="BPMNEdge_flow13">
+        <omgdi:waypoint x="865.0" y="267.0"></omgdi:waypoint>
+        <omgdi:waypoint x="907.0" y="268.0"></omgdi:waypoint>
+        <omgdi:waypoint x="907.0" y="354.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow14" id="BPMNEdge_flow14">
+        <omgdi:waypoint x="435.0" y="427.0"></omgdi:waypoint>
+        <omgdi:waypoint x="673.0" y="446.0"></omgdi:waypoint>
+        <omgdi:waypoint x="907.0" y="427.0"></omgdi:waypoint>
+        <omgdi:waypoint x="907.0" y="389.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow15" id="BPMNEdge_flow15">
+        <omgdi:waypoint x="55.0" y="269.0"></omgdi:waypoint>
+        <omgdi:waypoint x="90.0" y="269.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow16" id="BPMNEdge_flow16">
+        <omgdi:waypoint x="195.0" y="269.0"></omgdi:waypoint>
+        <omgdi:waypoint x="220.0" y="267.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow17" id="BPMNEdge_flow17">
+        <omgdi:waypoint x="330.0" y="427.0"></omgdi:waypoint>
+        <omgdi:waypoint x="142.0" y="427.0"></omgdi:waypoint>
+        <omgdi:waypoint x="142.0" y="297.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<model name="potwf:workflowModel" xmlns="http://www.alfresco.org/model/dictionary/1.0">
+    <!-- Optional meta-data about the model -->
+    <description>Workflow Model</description>
+    <author>Tushar Khanka</author>
+    <version>1.0</version>
+
+    <imports>
+        <!-- Import Alfresco Dictionary Definitions -->
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d"/>
+        <!-- Import Alfresco Content Domain Model Definitions -->
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm"/>
+        <!-- Import Alfresco Workflow Model Definitions -->
+        <import uri="http://www.alfresco.org/model/bpm/1.0" prefix="bpm"/>
+         <!-- Import Alfresco Dictionary Definitions -->
+        <import uri="http://www.alfresco.org/model/dictionary/1.0" prefix="d" />
+        <!-- Import Alfresco System Definitions -->
+        <import uri="http://www.alfresco.org/model/system/1.0" prefix="sys" />
+        <!-- Import Alfresco Content Domain Model Definitions -->
+        <import uri="http://www.alfresco.org/model/content/1.0" prefix="cm" />
+        <!-- Import User Model Definitions -->
+        <import uri="http://www.alfresco.org/model/user/1.0" prefix="usr"/>
+        
+        <!-- <import uri="http://www.mycompany.com/model/potbpm/1.0" prefix="potbpm" /> -->
+        
+    </imports>
+
+    <!-- Custom namespace for your domain -->
+    <namespaces>
+        <namespace uri="http://www.mycompany.com/model/workflow/1.0" prefix="potwf"/>
+         <namespace uri="http://www.mycompany.com/model/potbpm/1.0" prefix="potbpm" />
+    </namespaces>
+
+    <!-- ===============================================================================================================
+        Constraints, Types, and Aspects go here...
+        -->
+    <constraints>
+        <constraint name="potbpm:siteRoleList" type="LIST">
+            <parameter name="allowedValues">
+                <list>
+                	<value>Manager</value>
+                    <value>Collaborator</value>
+                    <value>Contributor</value>
+                </list>
+            </parameter>
+        </constraint>
+    </constraints>
+
+
+ <types>     
+ 
+       <type name="potbpm:workflowTask">
+            <parent>bpm:workflowTask</parent>
+            <properties>
+            	<property name="potbpm:requiredRole">
+                    <type>d:text</type>
+                    <!-- <default>Contributor</default> -->
+                    <constraints>
+                        <constraint ref="potbpm:siteRoleList" />
+                    </constraints>
+                </property>
+			</properties>
+      </type>
+      
+        <type name="potbpm:activitiOutcomeTask">
+            <parent>potbpm:workflowTask</parent>
+            <properties>
+                <!--  Specifies the property used to store the task outcome -->
+                <property name="bpm:outcomePropertyName">
+                    <type>d:qname</type>  
+                </property>
+            </properties>
+        </type>
+        
+        
+        
+        <type name="potbpm:startTask">
+            <parent>potbpm:workflowTask</parent>
+
+            <properties>
+
+                <!--  Description for the workflow as a whole -->
+                <property name="bpm:workflowDescription">
+                    <type>d:text</type>
+                    <constraints>
+                        <constraint ref="bpm:allowedDescriptionLength"/>
+                    </constraints> 
+                </property>
+
+                <!--  Due date for the workflow as a whole -->
+                <property name="bpm:workflowDueDate">
+                    <type>d:date</type>
+                </property>
+
+                <!--  Priority for the workflow as a whole -->
+                <property name="bpm:workflowPriority">
+                    <type>d:int</type>
+                    <default>2</default>
+                    <constraints>
+                        <constraint ref="bpm:allowedPriority" />
+                    </constraints>
+                </property>
+                
+                <property name="bpm:sendEMailNotifications">
+                   <type>d:boolean</type>
+                   <default>false</default>
+                </property>
+
+            </properties>
+
+            <overrides>
+
+                <property name="bpm:packageActionGroup">
+                    <default>add_package_item_actions</default>
+                </property>
+
+                <property name="bpm:packageItemActionGroup">
+                    <default>start_package_item_actions</default>
+                </property>
+
+            </overrides>
+
+        </type>
+        
+        
+        <type name="potbpm:activitiStartTask">
+            <parent>potbpm:startTask</parent>
+            <mandatory-aspects>
+                <aspect>bpm:endAutomatically</aspect>
+            </mandatory-aspects>
+        </type>
+      
+      
+      
+      <type name="potwf:submitReviewTask">
+         <parent>potbpm:startTask</parent>
+         <mandatory-aspects>
+            <aspect>bpm:assignee</aspect>
+         </mandatory-aspects>
+      </type>
+
+      <type name="potwf:submitConcurrentReviewTask">
+         <parent>potbpm:startTask</parent>
+         <properties>
+            <property name="potwf:requiredApprovePercent">
+                <type>d:int</type>
+                <mandatory>true</mandatory>
+                <default>50</default>
+                <constraints>
+                    <constraint type="MINMAX">
+                        <parameter name="minValue"><value>1</value></parameter>
+                        <parameter name="maxValue"><value>100</value></parameter>
+                    </constraint>
+                </constraints>
+            </property>
+          </properties>
+      </type>
+
+     
+      <!--  Submit review to multiple people (as included in a group) -->
+      <type name="potwf:submitGroupReviewTask">
+         <parent>potwf:submitConcurrentReviewTask</parent>
+          <overrides>
+            <property name="bpm:packageActionGroup">
+               <default>add_package_item_actions</default>
+            </property>
+         </overrides>
+          
+          <mandatory-aspects>
+            <aspect>bpm:groupAssignee</aspect>
+         </mandatory-aspects>
+         
+      </type>
+
+
+        <type name="potwf:activitiReviewTask">
+            <parent>potbpm:activitiOutcomeTask</parent>
+            <properties>
+                <property name="potwf:reviewOutcome">
+                    <type>d:text</type>
+                    <default>Reject</default>
+                    <constraints>
+                        <constraint name="potwf:reviewOutcomeOptions" type="LIST">
+                            <parameter name="allowedValues">
+                                <list>
+                                    <value>Approve</value>
+                                    <value>Reject</value>
+                                </list>
+                            </parameter>
+                        </constraint>
+                    </constraints>
+                </property>
+            </properties>
+            
+            <overrides>
+                <property name="bpm:packageItemActionGroup">
+                    <default>edit_package_item_actions</default>
+                </property>
+                <property name="bpm:outcomePropertyName">
+                    <default>{http://www.alfresco.org/model/workflow/1.0}reviewOutcome</default>
+                </property>
+            </overrides>
+        </type>
+
+      <type name="potwf:approvedTask">
+         <parent>potbpm:workflowTask</parent>
+      </type>
+
+      <type name="potwf:rejectedTask">
+         <parent>potbpm:workflowTask</parent>
+      </type>
+
+
+</types> 
+</model>
+

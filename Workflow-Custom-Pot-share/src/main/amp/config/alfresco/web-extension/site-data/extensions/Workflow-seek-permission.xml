@@ -1,0 +1,63 @@
+<extension>
+	<modules>
+		<module>
+			<id>Add Document Library Actions (Seek Permission)</id>
+			<version>1.0</version>
+			<auto-deploy>true</auto-deploy>
+			<configurations>
+
+                <config evaluator="string-compare" condition="DocLibActions">
+                    <actions>
+                        <action id="initWorkflow"
+                        		icon="Seek-Permission"
+                                type="javascript"
+                                label="Seek Permission">
+                            <param name="function">onActionFormDialog</param>
+                            <param name="itemKind">action</param>
+                            <param name="itemId">initWorkflowMyProcess</param> <!-- Repository action id = Spring Bean id -->
+                            <param name="mode">create</param>
+                            <param name="destination">{node.nodeRef}</param>
+                            <param name="successMessage">success</param>
+                            <param name="failureMessage">failure</param>
+                            
+                        </action>
+					</actions>	
+                    <actionGroups>
+                        <!-- We want the doclib actions to be visible in the
+                             document-browse and document-details views. -->
+                        <actionGroup id="document-browse">
+                            <action index="904" id="initWorkflow" />
+                        </actionGroup>
+                        <actionGroup id="document-details">
+                            <action index="904" id="initWorkflow" />
+                        </actionGroup>
+                    </actionGroups>
+                </config>
+
+                <!-- Send-As-Email DocLib action form.
+                     It matches the fields used by the send-as-email Repository action -->
+                <config evaluator="string-compare"
+                        condition="initWorkflowMyProcess"> <!-- ID for the Repository Action that this form is associated with -->
+                    <forms>
+                        <form>
+                            <field-visibility>
+                                <show id="required_Role"/>
+                                <show id="reason"/>
+                            </field-visibility>
+                            <appearance>
+                                <field id="required_Role" label-id="Required Role">
+                                	<control template="/com/workflow-custom/workflow-param-role.ftl" />
+                                </field>
+                                <field id="reason" label-id="Reason">
+                                	<control template="/com/workflow-custom/workflow-param-reason.ftl" />
+                                	<!-- <control template="/org/alfresco/components/form/controls/textarea.ftl" /> -->
+                                </field>
+                            </appearance>
+                        </form>
+                    </forms>
+                </config>
+
+			</configurations>
+		</module>
+	</modules>
+</extension>

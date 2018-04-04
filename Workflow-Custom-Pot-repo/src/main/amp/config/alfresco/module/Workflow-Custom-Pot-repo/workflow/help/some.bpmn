@@ -1,0 +1,79 @@
+
+ <?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:activiti="http://activiti.org/bpmn" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" typeLanguage="http://www.w3.org/2001/XMLSchema" expressionLanguage="http://www.w3.org/1999/XPath" targetNamespace="http://www.activiti.org/test">
+  <process id="customProcess" name="My Custom Process" isExecutable="true">
+    <startEvent id="alfrescoStartevent1" name="Alfresco start" activiti:formKey="wf:submitAdhocTask"></startEvent>
+    <userTask id="alfrescoUsertask1" name="First Task" activiti:assignee="${bpm_assignee.properties.userName}" activiti:formKey="wf:adhocTask">
+      <extensionElements>
+        <activiti:taskListener event="create" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
+          <activiti:field name="script">
+            <activiti:string><![CDATA[if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
+                      if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;]]></activiti:string>
+          </activiti:field>
+        </activiti:taskListener>
+      </extensionElements>
+       
+       <humanPerformer>
+                <resourceAssignmentExpression>
+                    <formalExpression>${bpm_assignee.properties.userName}</formalExpression>
+                </resourceAssignmentExpression>
+            </humanPerformer>
+            
+    </userTask>
+    <userTask id="alfrescoUsertask2" name="Verify Completed Task" activiti:assignee="${initiator.exists() ? initiator.properties.userName : 'admin'}" activiti:formKey="wf:completedAdhocTask">
+      <documentation>Verify the task was completed.</documentation>
+      
+       <extensionElements>
+        <activiti:taskListener event="create" class="org.alfresco.repo.workflow.activiti.tasklistener.ScriptTaskListener">
+           <activiti:field name="runAs"><activiti:string>admin</activiti:string></activiti:field>
+          <activiti:field name="script">
+            <activiti:string>
+            <![CDATA[if (typeof bpm_workflowDueDate != 'undefined') task.dueDate = bpm_workflowDueDate
+               if (typeof bpm_workflowPriority != 'undefined') task.priority = bpm_workflowPriority;
+                        
+                        for(var j = 0; j &lt; bpm_assignees.size(); j++) {
+                   var userName = bpm_assignees.get(j).properties.userName;
+                  for(var i = 0; i &lt; bpm_package.children.length; i++) {
+                     var resource = bpm_package.children;
+                     resource.setPermission("Contributor", userName);
+                  }
+               }]]></activiti:string>
+          </activiti:field>
+        </activiti:taskListener>
+      </extensionElements>
+      
+    </userTask>
+    <endEvent id="endevent1" name="End"></endEvent>
+    <sequenceFlow id="flow1" sourceRef="alfrescoStartevent1" targetRef="alfrescoUsertask1"></sequenceFlow>
+    <sequenceFlow id="flow2" sourceRef="alfrescoUsertask1" targetRef="alfrescoUsertask2"></sequenceFlow>
+    <sequenceFlow id="flow3" sourceRef="alfrescoUsertask2" targetRef="endevent1"></sequenceFlow>
+  </process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_customProcess">
+    <bpmndi:BPMNPlane bpmnElement="customProcess" id="BPMNPlane_customProcess">
+      <bpmndi:BPMNShape bpmnElement="alfrescoStartevent1" id="BPMNShape_alfrescoStartevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="40.0" y="240.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="alfrescoUsertask1" id="BPMNShape_alfrescoUsertask1">
+        <omgdc:Bounds height="55.0" width="105.0" x="160.0" y="230.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="alfrescoUsertask2" id="BPMNShape_alfrescoUsertask2">
+        <omgdc:Bounds height="55.0" width="105.0" x="360.0" y="230.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape bpmnElement="endevent1" id="BPMNShape_endevent1">
+        <omgdc:Bounds height="35.0" width="35.0" x="540.0" y="240.0"></omgdc:Bounds>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge bpmnElement="flow1" id="BPMNEdge_flow1">
+        <omgdi:waypoint x="75.0" y="257.0"></omgdi:waypoint>
+        <omgdi:waypoint x="160.0" y="257.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow2" id="BPMNEdge_flow2">
+        <omgdi:waypoint x="265.0" y="257.0"></omgdi:waypoint>
+        <omgdi:waypoint x="360.0" y="257.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge bpmnElement="flow3" id="BPMNEdge_flow3">
+        <omgdi:waypoint x="465.0" y="257.0"></omgdi:waypoint>
+        <omgdi:waypoint x="540.0" y="257.0"></omgdi:waypoint>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>
